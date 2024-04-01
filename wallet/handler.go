@@ -1,8 +1,9 @@
 package wallet
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -11,6 +12,7 @@ type Handler struct {
 
 type Storer interface {
 	Wallets() ([]Wallet, error)
+	QueryWalletsWithType(wt string) ([]Wallet, error)
 }
 
 func New(db Storer) *Handler {
@@ -22,18 +24,31 @@ type Err struct {
 }
 
 // WalletHandler
-//	@Summary		Get all wallets
-//	@Description	Get all wallets
-//	@Tags			wallet
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	Wallet
-//	@Router			/api/v1/wallets [get]
-//	@Failure		500	{object}	Err
+//
+// @Summary		Get all wallets
+// @Description	Get all wallets
+// @Tags		wallet
+// @Accept		json
+// @Param       wallet_type query string  ture "Wallet type  fillter"
+// @Produce		json
+// @Success		200	{object}	Wallet
+// @Router		/api/v1/wallets [get]
+// @Failure		500	{object}	Err
 func (h *Handler) WalletHandler(c echo.Context) error {
-	wallets, err := h.store.Wallets()
+	walletType := c.QueryParam("wallet_type")
+	var wallets []Wallet
+	var err error
+	if walletType != "" {
+
+		wallets, err = h.store.QueryWalletsWithType(walletType)
+	} else {
+
+		wallets, err = h.store.Wallets()
+
+	}
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
 	}
+
 	return c.JSON(http.StatusOK, wallets)
 }
