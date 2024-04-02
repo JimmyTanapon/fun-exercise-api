@@ -35,6 +35,31 @@ info:
   title: Wallet API
   version: "1.0"
 paths:
+  /api/v1/user/{id}/wallets:
+    get:
+      consumes:
+      - application/json
+      description: Get  wallets  by user id
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wallet.Wallet'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wallet.Err'
+      summary: Get  wallets by user id
+      tags:
+      - wallet
   /api/v1/wallets:
     get:
       consumes:

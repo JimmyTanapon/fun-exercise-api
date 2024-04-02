@@ -13,6 +13,7 @@ type Handler struct {
 type Storer interface {
 	Wallets() ([]Wallet, error)
 	QueryWalletsWithType(wt string) ([]Wallet, error)
+	QueryWalletsByUserId(uid string) ([]Wallet, error)
 }
 
 func New(db Storer) *Handler {
@@ -51,4 +52,25 @@ func (h *Handler) WalletHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, wallets)
+}
+
+// GetWalletByIdHandler
+//
+// @Summary		Get  wallets by user id
+// @Description	Get  wallets  by user id
+// @Tags		wallet
+// @Accept		json
+// @Param      	id path  string true  "user id"
+// @Produce		json
+// @Success		200	{object}	Wallet
+// @Router      /api/v1/user/{id}/wallets [get]
+// @Failure		500	{object}	Err
+func (h *Handler) GetWalletByIdHandler(c echo.Context) error {
+	user_id := c.Param("id")
+	wallets, err := h.store.QueryWalletsByUserId(user_id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, Err{Message: err.Error()})
+	}
+	return c.JSON(http.StatusOK, wallets)
+
 }
