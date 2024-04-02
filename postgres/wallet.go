@@ -108,3 +108,44 @@ func (p *Postgres) QueryWalletsByUserId(uid string) ([]wallet.Wallet, error) {
 	return wallets, nil
 
 }
+func (p *Postgres) CreateWallet(wallets wallet.Wallet) error {
+	_, err := p.Db.Exec(`
+	INSERT INTO public.user_wallet(user_id,user_name, wallet_name, wallet_type, balance) VALUES ($1,$2, $3,$4,$5);`,
+		wallets.UserID,
+		wallets.UserName,
+		wallets.WalletName,
+		wallets.WalletType,
+		wallets.Balance,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (p *Postgres) UpdateWallet(wallets wallet.Wallet) error {
+	_, err := p.Db.Exec(`UPDATE public.user_wallet
+	SET  user_id=$2, user_name=$3, wallet_name=$4, wallet_type=$5, balance=$6 WHERE id=$1;`,
+		wallets.ID,
+		wallets.UserID,
+		wallets.UserName,
+		wallets.WalletName,
+		wallets.WalletType,
+		wallets.Balance,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Postgres) DeleteWalletById(uid string) error {
+	_, err := p.Db.Exec("DELETE FROM public.user_wallet WHERE id=$1", uid)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
