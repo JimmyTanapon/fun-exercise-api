@@ -23,13 +23,7 @@ func main() {
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	handler := wallet.New(p)
 	e.GET("/api/v1/wallets", handler.WalletHandler)
-	// e.GET("/api/v1/wallets/:type", func(c echo.Context) error {
-	// 	// Get the wallet type from the URL parameter
-	// 	walletType := c.Param("type")
-
-	// 	// Logic to retrieve wallets by type (e.g., Saving)
-	// 	return c.String(http.StatusOK, "Wallets of type "+walletType)
-	// })
+	e.GET("/api/v1/user/:id/wallets", handler.GetWalletByIdHandler)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
